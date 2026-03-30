@@ -1,0 +1,9 @@
+Samuel Data
+Data Engineer
+
+Experience:
+- 6 years as a Data Engineer building scalable ETL pipelines.
+- Proficient in Python, Scala, and SQL.
+- Strong experience with Apache Spark, Airflow, and Kafka for real-time streaming.
+- Cloud experience utilizing Snowflake, AWS Redshift, and GCP BigQuery.
+- Containerization and orchestration with Docker and Kubernetes.

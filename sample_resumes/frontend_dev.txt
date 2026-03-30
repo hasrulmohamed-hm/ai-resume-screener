@@ -1,0 +1,8 @@
+John Doe
+Front End Software Engineer
+
+Experience:
+- 5 years building scalable web applications.
+- Proficient in HTML, CSS, JavaScript, React, and Vue.
+- Strong understanding of UI/UX principles and responsive design.
+- Experienced with Webpack, Babel, and Tailwind.

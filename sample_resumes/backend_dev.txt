@@ -1,0 +1,9 @@
+Jane Smith
+Backend Engineer
+
+Experience:
+- Developed microservices in Python and Node.js.
+- Strong background in SQL, PostgreSQL, and MongoDB.
+- Built scalable REST APIs using Flask and Django.
+- Containerized applications using Docker and Kubernetes.
+- Set up CI/CD pipelines targeting AWS and GCP.

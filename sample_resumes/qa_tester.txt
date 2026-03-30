@@ -1,0 +1,9 @@
+Alice Johnson
+QA / Software Tester
+
+Experience:
+- 4 years in software testing, both manual testing and automation.
+- Extensive experience with Selenium, Cypress, and Appium.
+- Wrote API tests using Postman and Pytest.
+- Involved in Agile / Scrum methodologies.
+- Performed rigorous regression testing and load testing using JMeter.

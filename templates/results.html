@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screener Results - {{ role }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-animation"></div>
+    <div class="container results-container">
+
+        <div class="results-header">
+            <a href="{{ url_for('index') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to
+                Scanner</a>
+            <h2><i class="fa-solid fa-chart-line"></i> Leaderboard for {{ role }}</h2>
+            <p id="time-taken-p">Analyzing candidates... <i class="fa-solid fa-spinner fa-spin"></i></p>
+        </div>
+
+        <div class="leaderboard" id="results-container">
+            <!-- Results injected here from EventSource -->
+        </div>
+
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <i class="fa-solid fa-folder-open empty-icon"></i>
+            <p>No valid resumes found in the target directory or upload.</p>
+        </div>
+
+    </div>
+
+    <script>
+        const container = document.getElementById('results-container');
+        const emptyState = document.getElementById('empty-state');
+        const timeTakenP = document.getElementById('time-taken-p');
+        let count = 0;
+        let resultsArray = [];
+
+        const source = new EventSource("{{ url_for('stream_results') }}");
+
+        source.onmessage = function (event) {
+            if (event.data.startsWith("DONE")) {
+                source.close();
+                if (count === 0) {
+                    emptyState.style.display = 'block';
+                    timeTakenP.innerHTML = "Analysis complete: No matches found.";
+                } else {
+                    const parts = event.data.split('|');
+                    const timeTaken = parts.length > 1 ? parts[1] : '?';
+                    timeTakenP.innerHTML = `Analyzed ${count} candidate(s) in ${timeTaken} seconds`;
+                }
+                return;
+            }
+
+            const result = JSON.parse(event.data);
+            count++;
+
+            let keywordsHtml = '';
+            if (result.matched && result.matched.length > 0) {
+                result.matched.forEach(kw => {
+                    keywordsHtml += `<span class="badge">${kw}</span>`;
+                });
+            } else {
+                keywordsHtml = `<span class="badge no-match">No keywords matched</span>`;
+            }
+
+            let scoreClass = 'low';
+            if (result.score >= 70) scoreClass = 'high';
+            else if (result.score >= 40) scoreClass = 'medium';
+
+            const div = document.createElement('div');
+            div.className = 'candidate-card slide-in';
+            div.style.animationDelay = '0s';
+
+            div.innerHTML = `
+                <div class="rank"></div>
+                <div class="candidate-info">
+                    <h3 title="${result.filename}">${result.filename}</h3>
+                    <div class="keywords-wrap">
+                        ${keywordsHtml}
+                    </div>
+                </div>
+                <div class="candidate-metrics">
+                    <div class="experience-metric">
+                        <div class="icon-bg">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <span class="exp-val">${result.experience}</span>
+                        <span class="exp-label">Experience</span>
+                    </div>
+                    <div class="candidate-score">
+                        <div class="score-circle ${scoreClass}">
+                            <span class="score-value">${Math.round(result.score)}%</span>
+                        </div>
+                        <span class="score-label">Match</span>
+                    </div>
+                </div>
+            `;
+
+            resultsArray.push({ div: div, score: result.score });
+            resultsArray.sort((a, b) => b.score - a.score);
+
+            resultsArray.forEach((item, index) => {
+                const rankEl = item.div.querySelector('.rank');
+                if (rankEl) {
+                    rankEl.textContent = '#' + (index + 1);
+                }
+                container.appendChild(item.div);
+            });
+        };
+
+        source.onerror = function () {
+            source.close();
+            if (count === 0) {
+                timeTakenP.innerHTML = "Error analyzing resumes.";
+            }
+        };
+    </script>
+</body>
+
+</html>
