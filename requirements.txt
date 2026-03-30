@@ -6,3 +6,5 @@ Werkzeug==3.0.1
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
+gunicorn==21.2.0
+waitress==2.1.2
